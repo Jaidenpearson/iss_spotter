@@ -1,13 +1,51 @@
-const fetchMyIP = function(callback) {
-  const needle = require('needle')
-  needle.get('https://api.ipify.org?format=json', (error, response) => {
-    if(!error && response.statusCode == 200) {
-      callback(null, response.body)
-    } else {
-      callback(error, null)
-    }
-  })
-  
-}
+const needle = require('needle');
 
-module.exports = { fetchMyIP };
+const fetchMyIP = function(callback) {
+  needle.get('https://api.ipify.org?format=json', (error, response) => {
+    if (!error && response.statusCode === 200) {
+      callback(null, response.body.ip);
+    } else {
+      callback(error, null);
+    }
+  });
+  
+};
+
+const fetchCoordsByIP = (IP, callback) => {
+  const url = 'http://ipwho.is/';
+  needle.get(url + IP, (error, response, body) => {
+    if (!body.success) {
+      const message = `Success status was ${body.success}. Server message says: ${body.message} when fetching for IP ${body.ip}`;
+      callback(Error(message), null);
+      return;
+    } else {
+      console.log(error);
+    }
+    const latitude = body.latitude;
+    const longitude = body.longitude;
+    callback(null, { latitude, longitude });
+    return;
+  });
+};
+
+// const fetchCoordsByIP = function(ip, callback) {
+//   needle.get(`http://ipwho.is/${ip}`, (error, response, body) => {
+
+//     if (error) {
+//       callback(error, null);
+//       return;
+//     }
+
+//     if (!body.success) {
+//       const message = `Success status was ${body.success}. Server message says: ${body.message} when fetching for IP ${body.ip}`;
+//       callback(Error(message), null);
+//       return;
+//     } 
+
+//     const latitude = body.latitude
+//     const longitude = body.longitude
+//     callback(null, {latitude, longitude});
+//   });
+// };
+
+module.exports = { fetchMyIP, fetchCoordsByIP };

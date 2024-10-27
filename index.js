@@ -1,9 +1,21 @@
-const { fetchMyIP } = require('./iss')
+const { fetchMyIP, fetchCoordsByIP } = require('./iss');
+
+let IP = ''
+let coordinates = {}
+
 
 fetchMyIP((error, response) => {
-  if(error) {
-    console.log('Error: ', error)
+  if (error) {
+    console.log('Error: ', error);
   } else {
-    console.log('Response:', response.ip)
+    IP = JSON.stringify(response);
   }
-})
+});
+
+fetchCoordsByIP(IP, (response, error) => {
+  if (error) {
+    console.log(error);
+  } else {
+    coordinates = response
+  }
+});
